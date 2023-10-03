@@ -1,0 +1,132 @@
+import * as React from 'react';
+import {
+  View,
+  Text,
+  Button,
+  Touchable,
+  TouchableOpacity,
+  GestureResponderEvent,
+  AccessibilityState,
+} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {
+  BottomTabBarButtonProps,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
+// import {StackNavigationProp} from '@react-navigation/stack';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {POPPINS} from './src/common/constants';
+import {configBottomNavigation} from './src/configuration/screens.configuration';
+type RootStackParamList = {
+  Home: undefined;
+  Details: {userId: string};
+  Feed: {sort: 'latest' | 'top'} | undefined;
+};
+
+// type HomeScreenProps = {
+//   navigation: StackNavigationProp<RootStackParamList>;
+// };
+type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'Details', 'userId'>;
+
+const HomeScreen = ({navigation}: HomeScreenProps) => {
+  return (
+    <View>
+      <Text style={{fontFamily: POPPINS.BOLD}}>Home Screen</Text>
+      <Text>Home Screen</Text>
+      <Button
+        title="Go to Profile"
+        onPress={() => navigation.navigate('Details', {userId: 'Jonatan'})}
+      />
+    </View>
+  );
+};
+const DetailsScreen = ({navigation, route}: Props) => {
+  return (
+    <View>
+      <Text>Details Puto Screen</Text>
+      <Button
+        title="Go to Profile"
+        onPress={() => navigation.navigate('Home')}
+      />
+      <Text>{route?.params?.userId ?? 'HOLA'}</Text>
+    </View>
+  );
+};
+interface PropsB {
+  onPress?: (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent,
+  ) => void;
+  accessibilityState?: AccessibilityState;
+  nameScreen: keyof RootStackParamList;
+  nameIcon: string;
+}
+function TabButton({
+  onPress,
+  accessibilityState,
+  nameIcon,
+  nameScreen,
+}: PropsB) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'red',
+      }}>
+      <MaterialCommunityIcons
+        name={nameIcon}
+        size={30}
+        color={accessibilityState?.selected ? 'blue' : 'lightblue'}
+      />
+    </TouchableOpacity>
+  );
+}
+
+const Tab = createBottomTabNavigator<RootStackParamList>();
+
+function MyTabs() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        initialRouteName="Home"
+        screenOptions={configBottomNavigation}>
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarLabel: 'Home',
+            tabBarButton: ({onPress, accessibilityState}) => (
+              <TabButton
+                nameIcon="card-minus"
+                nameScreen="Home"
+                onPress={onPress}
+                accessibilityState={accessibilityState}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Details"
+          component={DetailsScreen}
+          options={{
+            tabBarLabel: 'Details',
+            tabBarButton: ({onPress, accessibilityState}) => (
+              <TabButton
+                nameIcon="facebook-messenger"
+                nameScreen="Details"
+                accessibilityState={accessibilityState}
+                onPress={onPress}
+              />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
+export default MyTabs;

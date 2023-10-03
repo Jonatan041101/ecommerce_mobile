@@ -1,0 +1,51 @@
+// In App.js in a new project
+
+import * as React from 'react';
+import {View, Text, Button} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {
+  NativeStackScreenProps,
+  createNativeStackNavigator,
+} from '@react-navigation/native-stack';
+type RootStackParamList = {
+  Home: undefined;
+  Details: {userId: string};
+  Feed: {sort: 'latest' | 'top'} | undefined;
+};
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+function HomeScreen({navigation}: Props) {
+  return (
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Text>Home Screen</Text>
+      <Button
+        title="Go to Details... again"
+        onPress={() => navigation.push('Details', {userId: 'Jonatan'})}
+      />
+    </View>
+  );
+}
+type PropsD = NativeStackScreenProps<RootStackParamList, 'Details', 'userId'>;
+
+function DetailsScreen({navigation, route}: PropsD) {
+  console.log(navigation, route);
+  return (
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Text>Details Screen {route.params.userId}</Text>
+    </View>
+  );
+}
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+export default App;
